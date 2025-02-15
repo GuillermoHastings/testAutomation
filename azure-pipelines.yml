@@ -1,0 +1,48 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  SolutionName: 'YourSolution'
+  EnvironmentUrl: 'https://your-environment.crm.dynamics.com'
+  PowerPlatformServiceConnection: 'PowerPlatformServiceConnection'
+  GitHubServiceConnection: 'GitHubServiceConnection'
+  BranchName: 'main'
+  RepoName: 'YourRepository'
+  OrgName: 'YourGitHubOrganization'
+
+steps:
+- task: PowerPlatformToolInstaller@2
+  displayName: 'Install Power Platform Tools'
+
+- task: PowerPlatformExportSolution@2
+  displayName: 'Export Power Apps Solution'
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: $(PowerPlatformServiceConnection)
+    SolutionName: $(SolutionName)
+    Environment: $(EnvironmentUrl)
+    Managed: false
+    AsyncOperation: true
+    MaxAsyncWaitTime: 20
+
+- task: PowerPlatformUnpackSolution@2
+  displayName: 'Unpack Solution for Version Control'
+  inputs:
+    SolutionInputFile: '$(Build.SourcesDirectory)/$(SolutionName).zip'
+    SolutionTargetFolder: '$(Build.SourcesDirectory)/$(SolutionName)-unpacked'
+    SolutionType: 'Unmanaged'
+
+- script: |
+    git config --global user.email "devops@yourcompany.com"
+    git config --global user.name "Azure DevOps"
+    git clone https://github.com/$(OrgName)/$(RepoName).git
+    cd $(RepoName)
+    git checkout $(BranchName)
+    cp -r $(Build.SourcesDirectory)/$(SolutionName)-unpacked/* .
+    git add .
+    git commit -m "Exported solution $(SolutionName) on $(date)"
+    git push origin $(BranchName)
+  displayName: 'Commit & Push Solution to GitHub'
