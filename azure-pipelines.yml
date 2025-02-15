@@ -17,6 +17,15 @@ steps:
 - task: PowerPlatformToolInstaller@2
   displayName: 'Install Power Platform Tools'
 
+- script: |
+    pac auth create --url "$(EnvironmentUrl)" --name "DevEnvironment"
+    pac solution list --json > solutions.json
+  displayName: 'Retrieve Available Solutions'
+ 
+- script: |
+    type solutions.json
+  displayName: 'Show Available Solutions'
+  
 - task: PowerPlatformExportSolution@2
   displayName: 'Export Power Apps Solution'
   inputs:
