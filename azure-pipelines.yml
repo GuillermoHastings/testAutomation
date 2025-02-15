@@ -5,13 +5,13 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  SolutionName: 'YourSolution'
-  EnvironmentUrl: 'https://your-environment.crm.dynamics.com'
+  SolutionName: 'Demo App'
+  EnvironmentUrl: 'https://org36750a0e.api.crm11.dynamics.com'
   PowerPlatformServiceConnection: 'PowerPlatformServiceConnection'
   GitHubServiceConnection: 'GitHubServiceConnection'
   BranchName: 'main'
-  RepoName: 'YourRepository'
-  OrgName: 'YourGitHubOrganization'
+  RepoName: 'testAutomation'
+  OrgName: 'HD-IT-Development'
 
 steps:
 - task: PowerPlatformToolInstaller@2
@@ -36,8 +36,8 @@ steps:
     SolutionType: 'Unmanaged'
 
 - script: |
-    git config --global user.email "devops@yourcompany.com"
-    git config --global user.name "Azure DevOps"
+    git config --global user.email "guillermorodriguez-mon@hastingsdirect.com"
+    git config --global user.name "EY Power Platform Source Control"
     git clone https://github.com/$(OrgName)/$(RepoName).git
     cd $(RepoName)
     git checkout $(BranchName)
