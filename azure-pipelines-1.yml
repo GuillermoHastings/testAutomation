@@ -1,0 +1,41 @@
+trigger:
+- main
+ 
+pool:
+  vmImage: 'windows-latest'
+ 
+variables:
+  SolutionName: 'Demo App'
+  EnvironmentUrl: 'https://org36750a0e.api.crm11.dynamics.com'
+  PowerPlatformServiceConnection: 'PowerPlatformServiceConnection'
+  GitHubServiceConnection: 'GitHubServiceConnection'
+  BranchName: 'main'
+  RepoName: 'testAutomation'
+  OrgName: 'HD-IT-Development'
+ 
+steps:
+- task: PowerPlatformToolInstaller@2
+  displayName: 'Install Power Platform Tools'
+ 
+- script: |
+    git clone https://github.com/$(OrgName)/$(RepoName).git
+    cd $(RepoName)
+    git checkout $(BranchName)
+  displayName: 'Clone Solution from GitHub'
+ 
+- task: PowerPlatformPackSolution@2
+  displayName: 'Repackage Solution'
+  inputs:
+    SolutionSourceFolder: '$(Build.SourcesDirectory)/$(RepoName)'
+    SolutionOutputFile: '$(Build.ArtifactStagingDirectory)/$(SolutionName).zip'
+    SolutionType: 'Unmanaged'
+ 
+- task: PowerPlatformImportSolution@2
+  displayName: 'Import Solution to Target Environment'
+  inputs:
+    authenticationType: 'PowerPlatformSPN'
+    PowerPlatformSPN: $(PowerPlatformServiceConnection)
+    Environment: $(EnvironmentUrl)
+    SolutionInputFile: '$(Build.ArtifactStagingDirectory)/$(SolutionName).zip'
+    AsyncOperation: true
+    MaxAsyncWaitTime: 20
