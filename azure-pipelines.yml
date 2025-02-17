@@ -7,7 +7,7 @@ pool:
 variables:
   SolutionName: 'Demo App'
   EnvironmentUrl: 'https://org36750a0e.api.crm11.dynamics.com'
-  PowerPlatformServiceConnection: 'PowerPlatformServiceConnection'
+  PowerPlatformServiceConnection: 'Dev'
   GitHubServiceConnection: 'GitHubServiceConnection'
   BranchName: 'main'
   RepoName: 'testAutomation'
